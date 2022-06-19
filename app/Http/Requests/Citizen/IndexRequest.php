@@ -29,8 +29,8 @@ class IndexRequest extends FormRequest
 
             'full_name' => 'nullable|string',
             'passport' => 'nullable|string',
-            'birth_date' => 'nullable|date',
 
+            'limit' => 'nullable|numeric',
             'page' => 'nullable|numeric',
             'per_page' => 'nullable|numeric'
         ];

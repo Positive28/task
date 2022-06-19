@@ -10,35 +10,33 @@ use App\Http\Resources\CitizenCollection;
 use App\Models\Citizen;
 use App\Models\Company;
 use App\Models\CitizenCompany;
-use Illuminate\Http\Request;
 
 class CitizenController extends Controller
 {
+
     public function index(IndexRequest $request)
     {
-        // $params = $request->validated();
+        $filter_fields = ['full_name' => ['type' => 'string'],'passport' => ['type' => 'string']];
+        $params = $request->validated();
 
-        // $condition = [];
-        // $passport = request('passport', false);
-        // if ($passport) {
-        //     $condition['citizens.passport'] = $passport;
-        // }
+        if($params) 
+        {
+            foreach ($filter_fields as $key => $item) 
+            {
+                if (array_key_exists($key, $params)) 
+                {
+                    if ($item['type'] == 'string')
+                        $query = Citizen::where($key, 'like', '%' . $params[$key] . '%');
 
-        // $citizens = Citizen::with('citizen_companies.company')
-        //     ->where($condition)->paginate(10);
+                    if ($item['type'] == 'number' && $params[$key] != "")
+                        $query = Citizen::where($key, $params[$key]);
+                }
+            }
+            return new CitizenCollection($query->get());
+        }
 
-//        if ($params)
-//        {
-//            $items = Citizen::where('full_name', 'like', "%$params[full_name]%")->paginate(10);
-//        }else {
-//            $items = Citizen::orderBy('created_at', 'DESC')->paginate(10);
-//        }
-
-return new CitizenCollection(Citizen::paginate());
-        return response()->json([
-            'status' => 'success',
-            'data' => $citizens
-        ]);
+        return new CitizenCollection(Citizen::paginate());
+       
     }
 
     public function store(StoreRequest $request)
